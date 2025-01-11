@@ -22,7 +22,15 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             }),
     );
     
-    const csrf = () => customAxios.get('/sanctum/csrf-cookie');
+    // const csrf = () => customAxios.get('/sanctum/csrf-cookie');
+    const csrf = async () => {
+        try {
+            const response = await customAxios.get('/sanctum/csrf-cookie');
+            console.log('CSRF Cookie Response:', response); // Log the response
+        } catch (error) {
+            console.error('Error fetching CSRF cookie:', error);
+        }
+    };
 
     const register = async ({ setErrors, ...props }) => {
         await csrf();
