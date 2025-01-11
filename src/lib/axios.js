@@ -9,7 +9,6 @@ const customAxios = Axios.create({
     withCredentials: true, // Include credentials (cookies) in requests
 });
 
-// Automatically include CSRF token from cookies in headers
 customAxios.interceptors.request.use((config) => {
     // Retrieve CSRF token from cookies
     const xsrfToken = document.cookie
@@ -20,6 +19,8 @@ customAxios.interceptors.request.use((config) => {
     if (xsrfToken) {
         config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
     }
+
+    console.log('Request Headers:', config.headers); // Log headers for debugging
 
     return config;
 });
