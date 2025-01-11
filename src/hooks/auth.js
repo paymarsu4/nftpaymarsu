@@ -22,61 +22,66 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             }),
     );
     
-
     const csrf = () => customAxios.get('/sanctum/csrf-cookie');
 
     const register = async ({ setErrors, ...props }) => {
-        await csrf()
+        await csrf();
 
-        setErrors([])
+        setErrors([]);
 
         customAxios
             .post('/register', props)
             .then(() => mutate())
             .catch(error => {
-                if (error.response.status !== 422) throw error
-
-                setErrors(error.response.data.errors)
-            })
+                if (error.response.status !== 422) {
+                    throw error;
+                } else {
+                    setErrors(error.response.data.errors);
+                }
+            });
     }
 
     const login = async ({ setErrors, setStatus, ...props }) => {
-        await csrf()
+        await csrf();
 
-        setErrors([])
-        setStatus(null)
+        setErrors([]);
+        setStatus(null);
 
         customAxios
             .post('/login', props)
             .then(() => mutate())
             .catch(error => {
-                if (error.response.status !== 422) throw error
-
-                setErrors(error.response.data.errors)
-            })
+                if (error.response.status !== 422) {
+                    throw error;
+                } else {
+                    setErrors(error.response.data.errors);
+                }
+            });
     }
 
     const forgotPassword = async ({ setErrors, setStatus, email }) => {
-        await csrf()
+        await csrf();
 
-        setErrors([])
-        setStatus(null)
+        setErrors([]);
+        setStatus(null);
 
         customAxios
             .post('/forgot-password', { email })
             .then(response => setStatus(response.data.status))
             .catch(error => {
-                if (error.response.status !== 422) throw error
-
-                setErrors(error.response.data.errors)
-            })
+                if (error.response.status !== 422) {
+                    throw error;
+                } else {
+                    setErrors(error.response.data.errors)''
+                }
+            });
     }
 
     const resetPassword = async ({ setErrors, setStatus, ...props }) => {
-        await csrf()
+        await csrf();
 
-        setErrors([])
-        setStatus(null)
+        setErrors([]);
+        setStatus(null);
 
         customAxios
             .post('/reset-password', { token: params.token, ...props })
@@ -84,40 +89,45 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
                 router.push('/login?reset=' + btoa(response.data.status)),
             )
             .catch(error => {
-                if (error.response.status !== 422) throw error
-
-                setErrors(error.response.data.errors)
+                if (error.response.status !== 422) {
+                    throw error;
+                } else {
+                    setErrors(error.response.data.errors);
+                }
             })
     }
 
     const resendEmailVerification = ({ setStatus }) => {
         customAxios
             .post('/email/verification-notification')
-            .then(response => setStatus(response.data.status))
+            .then(response => setStatus(response.data.status));
     }
 
     const logout = async () => {
         if (!error) {
-            await customAxios.post('/logout').then(() => mutate())
+            await customAxios.post('/logout').then(() => mutate());
         }
 
-        window.location.pathname = '/login'
+        window.location.pathname = '/login';
     }
 
     useEffect(() => {
-        if (middleware === 'guest' && redirectIfAuthenticated && user)
-            router.push(redirectIfAuthenticated)
+        if (middleware === 'guest' && redirectIfAuthenticated && user) {
+            router.push(redirectIfAuthenticated);
+        }
 
-        if (middleware === 'auth' && !user?.email_verified_at)
-            router.push('/verify-email')
+        if (middleware === 'auth' && !user?.email_verified_at) {
+            router.push('/verify-email');
+        }
         
         if (
             window.location.pathname === '/verify-email' &&
             user?.email_verified_at
-        )
-            router.push(redirectIfAuthenticated)
-        if (middleware === 'auth' && error) logout()
-    }, [user, error])
+        ) {
+            router.push(redirectIfAuthenticated);
+        }
+        if (middleware === 'auth' && error) { logout(); }
+    }, [user, error]);
 
     return {
         user,
