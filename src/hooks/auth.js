@@ -7,20 +7,21 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     const router = useRouter();
     const params = useParams();
 
-    const { data: user, error, mutate } = useSWR('/api/user', () =>
-        customAxios
-            .get('/api/user')
-            .then(res => res.data)
-            .catch(error => {
-                if (error.response?.status === 409) {
-                    router.push('/verify-email');
-                } else if (error.response?.status === 401) {
-                    logout(); // Handle session expiration
-                } else {
-                    throw error; // Rethrow for unhandled errors
-                }
-            }),
-    );
+    const { data: user, error, mutate } = useSWR('/api/user', async () => {
+        try {
+            const response = await customAxios.get('/api/user');
+            return response.data;
+        } catch (err) {
+            if (err.response?.status === 409) {
+                router.push('/verify-email');
+            } else if (err.response?.status === 401) {
+                logout(); // Handle unauthorized access
+            } else {
+                console.error('Error fetching user:', err);
+            }
+            throw err; // Ensure SWR knows about the error
+        }
+    });    
 
     const csrf = () => customAxios.get('/sanctum/csrf-cookie');
 
@@ -117,14 +118,21 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     
         if (middleware === 'auth') {
             if (error) {
-                logout(); // Handle error (e.g., session expired)
-            } else if (!user?.email_verified_at) {
+                logout(); // Handle session expiration or other errors
+            } else if (user && !user.email_verified_at) {
                 router.push('/verify-email');
-            } else if (window.location.pathname === '/verify-email' && user?.email_verified_at) {
+            } else if (
+                window.location.pathname === '/verify-email' &&
+                user?.email_verified_at
+            ) {
                 router.push(redirectIfAuthenticated || '/');
             }
         }
-    }, [user, error, middleware, redirectIfAuthenticated]);
+
+        console.log('Middleware:', middleware);
+        console.log('User:', user);
+        console.log('Error:', error);
+    }, [user, error, middleware, redirectIfAuthenticated]);    
 
     return {
         user,
