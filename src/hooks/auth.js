@@ -4,21 +4,26 @@ import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
 export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
-    const router = useRouter()
-    const params = useParams()
+    const router = useRouter();
+    const params = useParams();
 
     const { data: user, error, mutate } = useSWR('/api/user', () =>
         customAxios
             .get('/api/user')
             .then(res => res.data)
             .catch(error => {
-                if (error.response.status !== 409) throw error
-
-                router.push('/verify-email')
+                if (error.response?.status === 409) {
+                    router.push('/verify-email');
+                } else if (error.response?.status === 401) {
+                    logout(); // Handle session expiration
+                } else {
+                    throw error; // Rethrow for unhandled errors
+                }
             }),
-    )
+    );
+    
 
-    const csrf = () => customAxios.get('/sanctum/csrf-cookie')
+    const csrf = () => customAxios.get('/sanctum/csrf-cookie');
 
     const register = async ({ setErrors, ...props }) => {
         await csrf()
