@@ -66,7 +66,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         //         }
         //     });
         customAxios.get('/sanctum/csrf-cookie').then(() => {
-            api.post('/login', {
+            customAxios.post('/login', {
               email: 'user@example.com',
               password: 'password',
             }).then(response => {
