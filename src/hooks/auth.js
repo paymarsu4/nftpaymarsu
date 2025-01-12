@@ -69,10 +69,6 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             customAxios.post('/login', {
               email: 'user@example.com',
               password: 'password',
-            }, {
-              headers: {
-                'X-XSRF-TOKEN': decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)XSRF-TOKEN\s*=\s*([^;]*).*$)|^.*$/, '$1')),
-              },
             }).then(response => {
               console.log('Logged in!', response.data);
             }).catch(error => {
