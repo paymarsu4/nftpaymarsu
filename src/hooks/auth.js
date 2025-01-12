@@ -69,16 +69,19 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             customAxios.post('/login', {
               email: 'user@example.com',
               password: 'password',
+            }, {
+              headers: {
+                'X-XSRF-TOKEN': decodeURIComponent(document.cookie.replace(/(?:(?:^|.*;\s*)XSRF-TOKEN\s*=\s*([^;]*).*$)|^.*$/, '$1')),
+              },
             }).then(response => {
               console.log('Logged in!', response.data);
             }).catch(error => {
               console.error('Login failed:', error.response);
             });
-        }).then(res => {
-            console.log('success!', res);
-        }).catch(err => {
-            console.log('error!', err);
-        });
+          }).catch(err => {
+            console.error('CSRF cookie request failed:', err.response);
+          });
+          
     }
 
     const forgotPassword = async ({ setErrors, setStatus, email }) => {

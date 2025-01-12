@@ -2,7 +2,7 @@ import Axios from 'axios';
 
 // Create a custom Axios instance
 const customAxios = Axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL, // Backend URL from environment variables
+    baseURL: 'https://tsurugi.cloud', // Backend URL from environment variables
     headers: {
         'X-Requested-With': 'XMLHttpRequest', // Ensure requests are marked as AJAX
     },
