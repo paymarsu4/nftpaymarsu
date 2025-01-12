@@ -74,6 +74,10 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
             }).catch(error => {
               console.error('Login failed:', error.response);
             });
+        }).then(res => {
+            console.log('Logged in!', res.data);
+        }).catch(err => {
+            console.log('Logged in!', err.response);
         });
     }
 
