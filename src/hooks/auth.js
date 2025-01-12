@@ -50,21 +50,31 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     }
 
     const login = async ({ setErrors, setStatus, ...props }) => {
-        await csrf();
+        // await csrf();
 
-        setErrors([]);
-        setStatus(null);
+        // setErrors([]);
+        // setStatus(null);
 
-        customAxios
-            .post('/login', props)
-            .then(() => mutate())
-            .catch(error => {
-                if (error.response.status !== 422) {
-                    throw error;
-                } else {
-                    setErrors(error.response.data.errors);
-                }
+        // customAxios
+        //     .post('/login', props)
+        //     .then(() => mutate())
+        //     .catch(error => {
+        //         if (error.response.status !== 422) {
+        //             throw error;
+        //         } else {
+        //             setErrors(error.response.data.errors);
+        //         }
+        //     });
+        customAxios.get('/sanctum/csrf-cookie').then(() => {
+            api.post('/login', {
+              email: 'user@example.com',
+              password: 'password',
+            }).then(response => {
+              console.log('Logged in!', response.data);
+            }).catch(error => {
+              console.error('Login failed:', error.response);
             });
+        });
     }
 
     const forgotPassword = async ({ setErrors, setStatus, email }) => {
